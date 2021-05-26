@@ -59,9 +59,6 @@ class Blockchain(object):
 
         while current_index < len(chain):
             block = chain[current_index]
-            print(f'{last_block}')
-            print(f'{block}')
-            print("\n--------------\n")
 
             last_block_hash = self.hash(last_block)
             if block['previous_hash'] != last_block_hash:
@@ -78,7 +75,7 @@ class Blockchain(object):
     def resolve_conflicts(self):
         neighbours = self.nodes
         new_chain = None
-        print(neighbours)
+
         max_length = len(self.chain)
 
         for node in neighbours:
