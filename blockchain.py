@@ -78,7 +78,7 @@ class Blockchain(object):
     def resolve_conflicts(self):
         neighbours = self.nodes
         new_chain = None
-
+        print(neighbours)
         max_length = len(self.chain)
 
         for node in neighbours:
@@ -167,7 +167,7 @@ class Blockchain(object):
 
         guess = f'{last_proof}{proof}{last_hash}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:4] == "0000"
+        return guess_hash[:5] == "00000"
     
 
 
@@ -277,6 +277,12 @@ def update_node_list():
     return 'node update done'
 # ==============================================================
 
+@app.route('/block_list', methods=['GET'])
+def show_block_list():
+    result = ""
+    for i in blockchain.chain:
+        result += str(i)+'<br>'
+    return result
 
 
 if __name__ == "__main__":

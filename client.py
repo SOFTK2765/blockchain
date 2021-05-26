@@ -15,14 +15,17 @@ def initiate():
                 'nodes': ['http://'+root_node_address+':5000']
             }
         ))
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect((root_node_address, 5000))
     requests.post(
         'http://'+root_node_address+':5000/nodes/register',
         headers={'Content-Type': 'application/json'},
         data=json.dumps(
             {
-                'nodes': ['http://'+socket.gethostbyname(socket.getfqdn())+':'+my_port]
+                'nodes': ['http://'+s.getsockname()[0]+':'+my_port]
             }
         ))
+    s.close()
 
 def mining():
     requests.get('http://localhost:'+my_port+'/update_node')
@@ -37,5 +40,5 @@ if __name__ == "__main__":
     initiate()
     while True:
         res = mining()
+        mining()
         print(res)
-        time.sleep(3)
