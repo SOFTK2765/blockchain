@@ -274,7 +274,7 @@ def ret_node_info():
 def update_node_list():
     blockchain.update_node()
 
-    return 200
+    return 'node update done'
 # ==============================================================
 
 
