@@ -300,7 +300,7 @@ def show_block_list():
     return result
 
 @app.route('/node_list', methods=['GET'])
-def show_block_list():
+def show_node_list():
     result = ""
     for i in blockchain.nodes:
         result += str(i)+'<br>'
