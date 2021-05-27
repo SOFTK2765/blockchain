@@ -299,6 +299,13 @@ def show_block_list():
         result += str(i)+'<br>'
     return result
 
+@app.route('/node_list', methods=['GET'])
+def show_block_list():
+    result = ""
+    for i in blockchain.nodes:
+        result += str(i)+'<br>'
+    return result
+
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
