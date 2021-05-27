@@ -296,7 +296,7 @@ def update_node_list():
 def show_block_list():
     result = ""
     for i in blockchain.chain:
-        result += i+
+        result += str(i)+'<br>'
     return result
 
 @app.route('/node_list', methods=['GET'])
