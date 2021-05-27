@@ -4,6 +4,7 @@ from time import time
 from urllib.parse import urlparse
 from uuid import uuid4
 import copy
+import random
 
 import requests
 from flask import Flask, jsonify, request
@@ -158,7 +159,7 @@ class Blockchain(object):
         last_proof = last_block['proof']
         last_hash = self.hash(last_block)
 
-        proof = 0
+        proof = random.randint(0, 100000000)
         while self.valid_proof(last_proof, proof, last_hash) is False:
             proof += 1
         

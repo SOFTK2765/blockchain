@@ -41,4 +41,3 @@ if __name__ == "__main__":
     while True:
         res = mining()
         print(res)
-        time.sleep(10)
