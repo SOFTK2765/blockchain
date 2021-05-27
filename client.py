@@ -3,7 +3,7 @@ import json
 import socket
 import time
 
-root_node_address = '192.168.0.161'
+root_node_address = '192.168.0.173'
 my_port = '5000'
 
 def initiate():
@@ -40,5 +40,4 @@ if __name__ == "__main__":
     initiate()
     while True:
         res = mining()
-        mining()
         print(res)

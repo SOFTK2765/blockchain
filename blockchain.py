@@ -3,6 +3,7 @@ import json
 from time import time
 from urllib.parse import urlparse
 from uuid import uuid4
+import copy
 
 import requests
 from flask import Flask, jsonify, request
@@ -23,21 +24,23 @@ class Blockchain(object):
     # Bad time complexity (naive algorithm) => need to change
     # ==============================================================
     def update_node(self):
-        neighbours = self.nodes
+        neighbours = copy.deepcopy(self.nodes)
 
         for node in neighbours:
-            response = requests.get(f'http://{node}/get_node_info')
+            if node != "5000":
+                response = requests.get(f'http://{node}/get_node_info')
 
-            if response.status_code == 200:
-                node_info_list = response.json()['nodes']
-                for address in node_info_list:
-                    parsed_url = urlparse(address)
-                    if parsed_url.netloc:
-                        self.nodes.add(parsed_url.netloc)
-                    elif parsed_url.path:
-                        self.nodes.add(parsed_url.path)
-                    else:
-                        raise ValueError('Invalid URL')
+                if response.status_code == 200:
+                    node_info_list = response.json()['nodes']
+                    
+                    for address in node_info_list:
+                        parsed_url = urlparse(address)
+                        if parsed_url.netloc:
+                            self.nodes.add(parsed_url.netloc)
+                        elif parsed_url.path:
+                            self.nodes.add(parsed_url.path)
+                        else:
+                            raise ValueError('Invalid URL')
     # ==============================================================
 
 
@@ -59,6 +62,9 @@ class Blockchain(object):
 
         while current_index < len(chain):
             block = chain[current_index]
+            print(f'{last_block}')
+            print(f'{block}')
+            print("\n--------------\n")
 
             last_block_hash = self.hash(last_block)
             if block['previous_hash'] != last_block_hash:
@@ -79,15 +85,16 @@ class Blockchain(object):
         max_length = len(self.chain)
 
         for node in neighbours:
-            response = requests.get(f'http://{node}/chain')
+            if node != "5000":
+                response = requests.get(f'http://{node}/chain')
 
-            if response.status_code == 200:
-                length = response.json()['length']
-                chain = response.json()['chain']
+                if response.status_code == 200:
+                    length = response.json()['length']
+                    chain = response.json()['chain']
 
-                if length > max_length and self.valid_chain(chain):
-                    max_length = length
-                    new_chain = chain
+                    if length > max_length and self.valid_chain(chain):
+                        max_length = length
+                        new_chain = chain
         
         if new_chain:
             self.chain = new_chain
@@ -165,6 +172,15 @@ class Blockchain(object):
         guess = f'{last_proof}{proof}{last_hash}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:5] == "00000"
+
+
+
+    @staticmethod
+    def valid_proof_ret(last_proof, proof, last_hash):
+
+        guess = f'{last_proof}{proof}{last_hash}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash
     
 
 
@@ -183,6 +199,7 @@ blockchain = Blockchain()
 def mine():
     last_block = blockchain.last_block
     proof = blockchain.proof_of_work(last_block)
+    block_hash = blockchain.valid_proof_ret(last_block['proof'], proof, blockchain.hash(last_block))
     
     blockchain.new_transaction(
         sender = "0",
@@ -199,6 +216,7 @@ def mine():
         'transactions': block['transaction'],
         'proof': block['proof'],
         'previous_hash': block['previous_hash'],
+        'hash': block_hash
     }
     return jsonify(response), 200
 
